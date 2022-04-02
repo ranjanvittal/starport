@@ -8,6 +8,19 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+func (k Keeper) GetPost(ctx sdk.Context, id uint64) (post types.Post) {
+	// Get the store using storeKey (which is "blog") and PostKey (which is "Post-")
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.PostKey))
+	// Convert the post ID into bytes
+	byteKey := make([]byte, 8)
+	binary.BigEndian.PutUint64(byteKey, id)
+	// Get the post bytes using post ID as a key
+	bz := store.Get(byteKey)
+	// Unmarshal the post bytes into the post object
+	k.cdc.MustUnmarshal(bz, &post)
+	return post
+}
+
 func (k Keeper) AppendPost(ctx sdk.Context, post types.Post) uint64 {
 	// Get the current number of posts in the store
 	count := k.GetPostCount(ctx)

@@ -5,11 +5,13 @@ import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
 import { MsgCreatePost } from "./types/blog/tx";
+import { MsgCreateComment } from "./types/blog/tx";
 import { MsgCreateDummy } from "./types/blog/tx";
 
 
 const types = [
   ["/cosmonaut.blog.blog.MsgCreatePost", MsgCreatePost],
+  ["/cosmonaut.blog.blog.MsgCreateComment", MsgCreateComment],
   ["/cosmonaut.blog.blog.MsgCreateDummy", MsgCreateDummy],
   
 ];
@@ -44,6 +46,7 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
     msgCreatePost: (data: MsgCreatePost): EncodeObject => ({ typeUrl: "/cosmonaut.blog.blog.MsgCreatePost", value: MsgCreatePost.fromPartial( data ) }),
+    msgCreateComment: (data: MsgCreateComment): EncodeObject => ({ typeUrl: "/cosmonaut.blog.blog.MsgCreateComment", value: MsgCreateComment.fromPartial( data ) }),
     msgCreateDummy: (data: MsgCreateDummy): EncodeObject => ({ typeUrl: "/cosmonaut.blog.blog.MsgCreateDummy", value: MsgCreateDummy.fromPartial( data ) }),
     
   };
