@@ -47,6 +47,7 @@ const getDefaultState = () => {
 				Posts: {},
 				Comment: {},
 				CommentAll: {},
+				Comments: {},
 				
 				_Structure: {
 						Comment: getStructure(Comment.fromPartial({})),
@@ -103,6 +104,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.CommentAll[JSON.stringify(params)] ?? {}
+		},
+				getComments: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Comments[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -234,6 +241,32 @@ export default {
 		},
 		
 		
+		
+		
+		 		
+		
+		
+		async QueryComments({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryComments( key.id, query)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await queryClient.queryComments( key.id, {...query, 'pagination.key':(<any> value).pagination.next_key})).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'Comments', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryComments', payload: { options: { all }, params: {...key},query }})
+				return getters['getComments']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryComments API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
 		async sendMsgCreatePost({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -249,18 +282,18 @@ export default {
 				}
 			}
 		},
-		async sendMsgCreateComment({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgDeleteComment({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateComment(value)
+				const msg = await txClient.msgDeleteComment(value)
 				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
 	gas: "200000" }, memo})
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateComment:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgDeleteComment:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgCreateComment:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgDeleteComment:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -279,6 +312,21 @@ export default {
 				}
 			}
 		},
+		async sendMsgCreateComment({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgCreateComment(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreateComment:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgCreateComment:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		
 		async MsgCreatePost({ rootGetters }, { value }) {
 			try {
@@ -293,16 +341,16 @@ export default {
 				}
 			}
 		},
-		async MsgCreateComment({ rootGetters }, { value }) {
+		async MsgDeleteComment({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateComment(value)
+				const msg = await txClient.msgDeleteComment(value)
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateComment:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgDeleteComment:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgCreateComment:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgDeleteComment:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -316,6 +364,19 @@ export default {
 					throw new Error('TxClient:MsgCreateDummy:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgCreateDummy:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgCreateComment({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgCreateComment(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreateComment:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgCreateComment:Create Could not create message: ' + e.message)
 				}
 			}
 		},
