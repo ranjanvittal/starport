@@ -1,0 +1,11 @@
+syntax = "proto3";
+package cosmonaut.blog.blog;
+
+option go_package = "github.com/cosmonaut/blog/x/blog/types";
+
+message Follow {
+  uint64 id = 1;
+  string creator = 2; 
+  string following = 3; 
+  
+}

@@ -1,0 +1,69 @@
+syntax = "proto3";
+package cosmonaut.blog.blog;
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/cosmonaut/blog/x/blog/types";
+
+// Msg defines the Msg service.
+service Msg {
+      rpc CreatePost(MsgCreatePost) returns (MsgCreatePostResponse);
+  rpc CreateDummy(MsgCreateDummy) returns (MsgCreateDummyResponse);
+  rpc CreateComment(MsgCreateComment) returns (MsgCreateCommentResponse);
+  rpc DeleteComment(MsgDeleteComment) returns (MsgDeleteCommentResponse);
+  rpc CreateFollow(MsgCreateFollow) returns (MsgCreateFollowResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgCreatePost {
+  string creator = 1;
+  string title = 2;
+  string body = 3;
+  uint64 id = 4;
+}
+
+message MsgCreatePostResponse {
+  uint64 id = 1;
+}
+
+message MsgCreateDummy {
+  string creator = 1;
+  string dummy = 2;
+  string t1 = 3;
+  string t2 = 4;
+}
+
+message MsgCreateDummyResponse {
+}
+
+message MsgCreateComment {
+  string creator = 1;
+  uint64 postID = 2;
+  string title = 3;
+  string body = 4;
+  uint64 id = 5;
+}
+
+message MsgCreateCommentResponse {
+  uint64 id = 1;
+}
+
+message MsgDeleteComment {
+  string creator = 1;
+  uint64 commentID = 2;
+  uint64 postID = 3;
+}
+
+message MsgDeleteCommentResponse {
+}
+
+message MsgCreateFollow {
+  string creator = 1;
+  string following = 2;
+}
+
+message MsgCreateFollowResponse {
+  uint64 id = 1;
+}
+
+// this line is used by starport scaffolding # proto/tx/message
