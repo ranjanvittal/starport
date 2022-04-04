@@ -95,6 +95,26 @@ export interface QueryFollowingPostsResponse {
   post_with_comments: PostWithComments[];
 }
 
+export interface QueryFollowedByRequest {
+  creator: string;
+  pagination: PageRequest | undefined;
+}
+
+export interface QueryFollowedByResponse {
+  following: string[];
+  pagination: PageResponse | undefined;
+}
+
+export interface QueryFollowedPostsRequest {
+  creator: string;
+  pagination: PageRequest | undefined;
+}
+
+export interface QueryFollowedPostsResponse {
+  post: Post[];
+  pagination: PageResponse | undefined;
+}
+
 const baseQueryParamsRequest: object = {};
 
 export const QueryParamsRequest = {
@@ -1346,6 +1366,370 @@ export const QueryFollowingPostsResponse = {
   },
 };
 
+const baseQueryFollowedByRequest: object = { creator: "" };
+
+export const QueryFollowedByRequest = {
+  encode(
+    message: QueryFollowedByRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryFollowedByRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryFollowedByRequest } as QueryFollowedByRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryFollowedByRequest {
+    const message = { ...baseQueryFollowedByRequest } as QueryFollowedByRequest;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryFollowedByRequest): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageRequest.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryFollowedByRequest>
+  ): QueryFollowedByRequest {
+    const message = { ...baseQueryFollowedByRequest } as QueryFollowedByRequest;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryFollowedByResponse: object = { following: "" };
+
+export const QueryFollowedByResponse = {
+  encode(
+    message: QueryFollowedByResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    for (const v of message.following) {
+      writer.uint32(10).string(v!);
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(
+        message.pagination,
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryFollowedByResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryFollowedByResponse,
+    } as QueryFollowedByResponse;
+    message.following = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.following.push(reader.string());
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryFollowedByResponse {
+    const message = {
+      ...baseQueryFollowedByResponse,
+    } as QueryFollowedByResponse;
+    message.following = [];
+    if (object.following !== undefined && object.following !== null) {
+      for (const e of object.following) {
+        message.following.push(String(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryFollowedByResponse): unknown {
+    const obj: any = {};
+    if (message.following) {
+      obj.following = message.following.map((e) => e);
+    } else {
+      obj.following = [];
+    }
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageResponse.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryFollowedByResponse>
+  ): QueryFollowedByResponse {
+    const message = {
+      ...baseQueryFollowedByResponse,
+    } as QueryFollowedByResponse;
+    message.following = [];
+    if (object.following !== undefined && object.following !== null) {
+      for (const e of object.following) {
+        message.following.push(e);
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryFollowedPostsRequest: object = { creator: "" };
+
+export const QueryFollowedPostsRequest = {
+  encode(
+    message: QueryFollowedPostsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryFollowedPostsRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryFollowedPostsRequest,
+    } as QueryFollowedPostsRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryFollowedPostsRequest {
+    const message = {
+      ...baseQueryFollowedPostsRequest,
+    } as QueryFollowedPostsRequest;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryFollowedPostsRequest): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageRequest.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryFollowedPostsRequest>
+  ): QueryFollowedPostsRequest {
+    const message = {
+      ...baseQueryFollowedPostsRequest,
+    } as QueryFollowedPostsRequest;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryFollowedPostsResponse: object = {};
+
+export const QueryFollowedPostsResponse = {
+  encode(
+    message: QueryFollowedPostsResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    for (const v of message.post) {
+      Post.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(
+        message.pagination,
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryFollowedPostsResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryFollowedPostsResponse,
+    } as QueryFollowedPostsResponse;
+    message.post = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.post.push(Post.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryFollowedPostsResponse {
+    const message = {
+      ...baseQueryFollowedPostsResponse,
+    } as QueryFollowedPostsResponse;
+    message.post = [];
+    if (object.post !== undefined && object.post !== null) {
+      for (const e of object.post) {
+        message.post.push(Post.fromJSON(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryFollowedPostsResponse): unknown {
+    const obj: any = {};
+    if (message.post) {
+      obj.post = message.post.map((e) => (e ? Post.toJSON(e) : undefined));
+    } else {
+      obj.post = [];
+    }
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageResponse.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryFollowedPostsResponse>
+  ): QueryFollowedPostsResponse {
+    const message = {
+      ...baseQueryFollowedPostsResponse,
+    } as QueryFollowedPostsResponse;
+    message.post = [];
+    if (object.post !== undefined && object.post !== null) {
+      for (const e of object.post) {
+        message.post.push(Post.fromPartial(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
@@ -1366,6 +1750,12 @@ export interface Query {
   FollowingPosts(
     request: QueryFollowingPostsRequest
   ): Promise<QueryFollowingPostsResponse>;
+  /** Queries a list of FollowedBy items. */
+  FollowedBy(request: QueryFollowedByRequest): Promise<QueryFollowedByResponse>;
+  /** Queries a list of FollowedPosts items. */
+  FollowedPosts(
+    request: QueryFollowedPostsRequest
+  ): Promise<QueryFollowedPostsResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1466,6 +1856,34 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       QueryFollowingPostsResponse.decode(new Reader(data))
+    );
+  }
+
+  FollowedBy(
+    request: QueryFollowedByRequest
+  ): Promise<QueryFollowedByResponse> {
+    const data = QueryFollowedByRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "cosmonaut.blog.blog.Query",
+      "FollowedBy",
+      data
+    );
+    return promise.then((data) =>
+      QueryFollowedByResponse.decode(new Reader(data))
+    );
+  }
+
+  FollowedPosts(
+    request: QueryFollowedPostsRequest
+  ): Promise<QueryFollowedPostsResponse> {
+    const data = QueryFollowedPostsRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "cosmonaut.blog.blog.Query",
+      "FollowedPosts",
+      data
+    );
+    return promise.then((data) =>
+      QueryFollowedPostsResponse.decode(new Reader(data))
     );
   }
 }

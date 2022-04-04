@@ -117,6 +117,36 @@ export interface BlogQueryCommentsResponse {
   pagination?: V1Beta1PageResponse;
 }
 
+export interface BlogQueryFollowedByResponse {
+  following?: string[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface BlogQueryFollowedPostsResponse {
+  post?: BlogPost[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
 export interface BlogQueryFollowingPostsResponse {
   post_with_comments?: BlogPostWithComments[];
 }
@@ -529,6 +559,60 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     this.request<BlogQueryGetFollowResponse, RpcStatus>({
       path: `/cosmonaut/blog/blog/follow/${id}`,
       method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryFollowedBy
+   * @summary Queries a list of FollowedBy items.
+   * @request GET:/cosmonaut/blog/blog/followed_by/{creator}
+   */
+  queryFollowedBy = (
+    creator: string,
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<BlogQueryFollowedByResponse, RpcStatus>({
+      path: `/cosmonaut/blog/blog/followed_by/${creator}`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryFollowedPosts
+   * @summary Queries a list of FollowedPosts items.
+   * @request GET:/cosmonaut/blog/blog/followed_posts/{creator}
+   */
+  queryFollowedPosts = (
+    creator: string,
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<BlogQueryFollowedPostsResponse, RpcStatus>({
+      path: `/cosmonaut/blog/blog/followed_posts/${creator}`,
+      method: "GET",
+      query: query,
       format: "json",
       ...params,
     });

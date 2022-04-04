@@ -53,6 +53,16 @@ service Query {
 		option (google.api.http).get = "/cosmonaut/blog/blog/following_posts/{id}";
 	}
 
+// Queries a list of FollowedBy items.
+	rpc FollowedBy(QueryFollowedByRequest) returns (QueryFollowedByResponse) {
+		option (google.api.http).get = "/cosmonaut/blog/blog/followed_by/{creator}";
+	}
+
+// Queries a list of FollowedPosts items.
+	rpc FollowedPosts(QueryFollowedPostsRequest) returns (QueryFollowedPostsResponse) {
+		option (google.api.http).get = "/cosmonaut/blog/blog/followed_posts/{creator}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -138,6 +148,26 @@ message PostWithComments {
 
 message QueryFollowingPostsResponse {
   repeated PostWithComments post_with_comments = 1;
+}
+
+message QueryFollowedByRequest {
+  string creator = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryFollowedByResponse {
+	repeated string following = 1;
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryFollowedPostsRequest {
+  string creator = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryFollowedPostsResponse {
+	repeated Post post = 1;
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

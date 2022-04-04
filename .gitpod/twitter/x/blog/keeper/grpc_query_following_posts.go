@@ -14,14 +14,13 @@ func (k Keeper) FollowingPosts(goCtx context.Context, req *types.QueryFollowingP
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
-	log.Println("here")
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	log.Println("here")
+
 	follow_list := k.GetAllFollow(ctx)
 	post_list := k.GetAllPost(ctx)
 	comment_list := k.GetAllComment(ctx)
 
-	log.Println("here")
+	log.Println("here1")
 	var followed_creators map[string]bool
 	for i := 0; i < len(follow_list); i++ {
 		follow := follow_list[i]
