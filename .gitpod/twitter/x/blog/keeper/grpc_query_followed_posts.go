@@ -30,8 +30,8 @@ func (k Keeper) FollowedPosts(goCtx context.Context, req *types.QueryFollowedPos
 	// Get the post ID
 	creator := req.Creator
 
-	// Paginate the posts store based on PageRequest
-	_, err := query.Paginate(followStore, req.Pagination, func(key []byte, value []byte) error {
+	// Obtain follows
+	_, err := query.Paginate(followStore, nil, func(key []byte, value []byte) error {
 		var following types.Follow
 		if err := k.cdc.Unmarshal(value, &following); err != nil {
 			return err
@@ -43,6 +43,7 @@ func (k Keeper) FollowedPosts(goCtx context.Context, req *types.QueryFollowedPos
 
 		return nil
 	})
+
 	// Throw an error if pagination failed
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
@@ -69,5 +70,8 @@ func (k Keeper) FollowedPosts(goCtx context.Context, req *types.QueryFollowedPos
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryFollowedPostsResponse{Post: post_list, Pagination: pageRes2}, nil
+	return &types.QueryFollowedPostsResponse{
+		Post:        post_list,
+		Pagination:  pageRes2,
+	}, nil
 }
